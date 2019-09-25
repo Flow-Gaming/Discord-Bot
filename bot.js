@@ -3,7 +3,6 @@ var bot = new Discord.Client();
 var express = require('express');
 var app = express();
 var cookieParser = require('cookie-parser');
-var MongoClient = require('mongodb').MongoClient;
 var passwords = require('./passwords.json');
 var packageInfo = require('./package.json');
 const prefix = '.f';
