@@ -5,7 +5,7 @@ var app = express();
 var cookieParser = require('cookie-parser');
 var passwords = require('./passwords.json');
 var packageInfo = require('./package.json');
-const prefix = '.f';
+const prefix = 'f.';
 
 //==================== Server Setup ====================
 //Docker Port 4650 - 4659
@@ -25,7 +25,12 @@ app.use(cookieParser());
 
 app.get('/', (req, res) => {
   console.log("Request from " + sanitizeString(req.cookies.id));
-  res.send("This is the Flow Gaming Discord Bot Server.");
+  res.send("This is the Flow Gaming Discord Bot Server on build " + packageInfo.version);
+  bot.guilds.forEach((guild) => {
+    if (guild.name == "Flow Gaming") {
+      console.log(guild.defaultChannel);
+    }
+  });
 });
 
 
