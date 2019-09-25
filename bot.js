@@ -15,8 +15,14 @@ var server = app.listen(4650, function () {
    bot.login(passwords.discordToken);
 
    bot.on('ready', () => {
-   	console.log('Flow Bot Online');
    	bot.user.setActivity(prefix + 'help');
+
+    bot.guilds.forEach((guild) => {
+      if (guild.name == "Flow Gaming") {
+        guild.channels.find(channel => channel.id === '580837355359961124').send('Flow Bot Online');
+        console.log('Flow Bot Online');
+      }
+    });
    });
 })
 
@@ -26,11 +32,6 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
   console.log("Request from " + sanitizeString(req.cookies.id));
   res.send("This is the Flow Gaming Discord Bot Server on build " + packageInfo.version);
-  bot.guilds.forEach((guild) => {
-    if (guild.name == "Flow Gaming") {
-      console.log(guild.defaultChannel);
-    }
-  });
 });
 
 
