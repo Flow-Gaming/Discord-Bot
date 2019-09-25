@@ -1,0 +1,26 @@
+{
+  "name": "flow-gaming-discord-bot",
+  "version": "0.0.1",
+  "description": "The Flow Gaming Discord Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psaidwid/discord-bot.git"
+  },
+  "author": "Psaidwid",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/flow-gaming/discord-bot/issues"
+  },
+  "homepage": "https://github.com/psaidwid/discord-bot#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "discord.js": "^11.5.1",
+    "express": "^4.17.1",
+    "mongodb": "^3.3.2",
+    "pug": "^2.0.4"
+  }
+}
