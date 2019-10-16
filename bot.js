@@ -6,8 +6,9 @@ var cookieParser = require('cookie-parser');
 var passwords = require('./passwords.json');
 var packageInfo = require('./package.json');
 var request = require('request').defaults({jar: true});
-const prefix = 'f.';
 var serverCookie = request.jar();
+const prefix = 'f.';
+const apiUrl = 'https://api2.flowgaming.org/graphql';
 
 //==================== Server Setup ====================
 //Docker Port 4650 - 4659
@@ -21,8 +22,8 @@ var server = app.listen(4650, function () {
 
     bot.guilds.forEach((guild) => {
       if (guild.name == "Flow Gaming") {
-        serverCookie.setCookie('id=' + passwords.serverIdToken, 'https://api2.flowgaming.org/graphql');
-        guild.channels.find(channel => channel.id == '580837355359961124').send('Flow Bot Online');
+        serverCookie.setCookie('id=' + passwords.serverIdToken, apiUrl);
+        guild.channels.find(channel => channel.id === '580837355359961124').send('Flow Bot Online');
         console.log('Flow Bot Online');
       }
     });
@@ -35,6 +36,26 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
   console.log("Request from " + sanitizeString(req.cookies.id));
   res.send("This is the Flow Gaming Discord Bot Server on build " + packageInfo.version);
+});
+
+app.get('/users/:discordId/:field/:data', (req, res) => {
+  console.log("Request from " + sanitizeString(req.cookies.id));
+
+  var requestData = {
+    discordId: sanitizeString(req.params.discordId),
+    field: sanitizeString(req.params.field),
+    data: sanitizeString(req.params.data)
+  }
+
+  console.log(bot.guilds);
+
+
+
+  //bot.guilds.find(val => val.id === '352601559458250762').then((guild) => {
+    //console.log(guild);
+  //});
+
+  console.log(requestData);
 });
 
 
@@ -114,7 +135,7 @@ bot.on('message', message => {
 function changeWebsiteRank(requestID, editID, newRank) {
   return new Promise((resolve, reject) => {
     request.post({
-      url: 'https://api2.flowgaming.org/graphql',
+      url: apiUrl,
       form: {
         query: `
         {
@@ -136,9 +157,9 @@ function changeWebsiteRank(requestID, editID, newRank) {
         reject(false);
       } else {
         var personalCookie = request.jar();
-        personalCookie.setCookie('id=' + responseObject.data.request.uniqueid, 'https://api2.flowgaming.org/graphql');
+        personalCookie.setCookie('id=' + responseObject.data.request.uniqueid, apiUrl);
         request.post({
-          url: 'https://api2.flowgaming.org/graphql',
+          url: apiUrl,
           form: {
             query: `
             mutation {
