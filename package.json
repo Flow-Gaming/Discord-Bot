@@ -1,6 +1,6 @@
 {
   "name": "flow-gaming-discord-bot",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "The Flow Gaming Discord Bot",
   "main": "bot.js",
   "scripts": {
