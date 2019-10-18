@@ -10,24 +10,119 @@ var serverCookie = request.jar();
 const prefix = 'f.';
 const apiUrl = 'https://api2.flowgaming.org/graphql';
 
+
+const RankID = {
+  Newbie: '618284984305975306',
+  Regular: '352602895776088064',
+  Veteran: '352602848128663553',
+  Moderator: '352602806336749590',
+  Developer: '615062673775919116',
+  Admin: '352602773537161219',
+  Owner: '352601920545882112'
+}
+
+const ErrorStrings = {
+  INVALID_FIELD: "INVALID_FIELD",
+  INVALID_ID: "INVALID_ID",
+  INVALID_SEARCH: "INVALID_SEARCH",
+  INVALID_USER: "INVALID_USER",
+  UNAUTHORIZED: "UNAUTHORIZED",
+  UNKNOWN: "UNKNOWN"
+}
+
+const Convert = {
+  Rank: {
+    toId: function (num) {
+      console.log('num ' + typeof num + ' ' + num);
+      switch (String(num)) {
+        case '1':
+          return RankID.Newbie;
+        case '2':
+          return RankID.Regular;
+        case '3':
+          return RankID.Veteran;
+        case '4':
+          return RankID.Moderator;
+        case '5':
+          return RankID.Developer;
+        case '6':
+          return RankID.Admin;
+        case '7':
+          return RankID.Owner;
+        case RankID.Newbie:
+          return RankID.Newbie;
+        case RankID.Regular:
+          return RankID.Regular;
+        case RankID.Veteran:
+          return RankID.Veteran;
+        case RankID.Moderator:
+          return RankID.Moderator;
+        case RankID.Developer:
+          return RankID.Developer;
+        case RankID.Admin:
+          return RankID.Admin;
+        case RankID.Owner:
+          return RankID.Owner;
+        default:
+          return 0;
+      }
+    },
+
+    toNum: function (rank) {
+      switch (String(rank)) {
+        case '1':
+          return 1;
+        case '2':
+          return 2;
+        case '3':
+          return 3;
+        case '4':
+          return 4;
+        case '5':
+          return 5;
+        case '6':
+          return 6;
+        case '7':
+          return 7;
+        case RankID.Newbie:
+          return 1;
+        case RankID.Regular:
+          return 2;
+        case RankID.Veteran:
+          return 3;
+        case RankID.Moderator:
+          return 4;
+        case RankID.Developer:
+          return 5;
+        case RankID.Admin:
+          return 6;
+        case RankID.Owner:
+          return 7;
+        default:
+          return 0;
+      }
+    }
+  }
+}
+
 //==================== Server Setup ====================
 //Docker Port 4650 - 4659
 var server = app.listen(4650, function () {
-   console.log("Discord Bot Server listening on port "+ server.address().port);
+  console.log("Discord Bot Server listening on port "+ server.address().port);
 
-   bot.login(passwords.discordToken);
+  bot.login(passwords.discordToken);
 
-   bot.on('ready', () => {
-   	bot.user.setActivity(prefix + 'help');
+  bot.on('ready', () => {
+    bot.user.setActivity(prefix + 'help');
 
     bot.guilds.forEach((guild) => {
       if (guild.name == "Flow Gaming") {
         serverCookie.setCookie('id=' + passwords.serverIdToken, apiUrl);
-        guild.channels.find(channel => channel.id === '580837355359961124').send('Flow Bot Online');
+        guild.channels.find(channel => channel.id === '615062943121408000').send('Flow Bot Online');
         console.log('Flow Bot Online');
       }
     });
-   });
+  });
 })
 
 app.set('view engine', 'pug');
@@ -39,25 +134,38 @@ app.get('/', (req, res) => {
 });
 
 app.get('/users/:discordId/:field/:data', (req, res) => {
-  console.log("Request from " + sanitizeString(req.cookies.id));
 
   var requestData = {
+    cookie: sanitizeString(req.cookies.id),
     discordId: sanitizeString(req.params.discordId),
     field: sanitizeString(req.params.field),
     data: sanitizeString(req.params.data)
   }
 
-  console.log(bot.guilds);
+  //Flow Gaming
+  var fgGuild = bot.guilds.get('352601559458250762');
 
+  //Data field to edit
+  switch (requestData.field) {
+    case 'rank':
+      if (requestData.cookie == passwords.serverIdToken) {
+        changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
+          fgGuild.channels.get('615062943121408000').send(
+            'User edit from server:\n' +
+            fgGuild.members.get(requestData.discordId).displayName +
+            ' from http://localhost:4650/users/'+requestData.discordId+'/'+requestData.field+'/'+requestData.data
+          );
+        });
+      } else {
+        console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
+        res.send(ErrorStrings.UNAUTHORIZED);
+        return;
+      }
+      break;
+  }
 
-
-  //bot.guilds.find(val => val.id === '352601559458250762').then((guild) => {
-    //console.log(guild);
-  //});
-
-  console.log(requestData);
+  res.send('Hello');
 });
-
 
 bot.on('message', message => {
 	if (message.author === bot.user)
@@ -68,7 +176,7 @@ bot.on('message', message => {
 		message.channel.send('https://www.flowgaming.org');
 	} else if (message.content.startsWith(prefix + 'invite')) {
 		console.log(message.author.username + ' : invite : ' + message.createdAt);
-		message.channel.send('https://discord.gg/DV8J9tC');
+		message.channel.send('https://discord.gg/NC3E6ZN');
 	} else if (message.content.startsWith(prefix + 'help')) {
 		console.log(message.author.username + ' : help : ' + message.createdAt);
 		message.channel.send(
@@ -106,9 +214,9 @@ bot.on('message', message => {
         return;
       }
       changeWebsiteRank(
-        message.author.id,
-        message.mentions.members.array()[0].id,
-        convertRankIDtoNum(message.mentions.roles.array()[0].id)
+        Convert.Rank.toId(message.author.id),
+        Convert.Rank.toId(message.mentions.members.array()[0].id),
+        Convert.Rank.toId(message.mentions.roles.array()[0].id)
       ).then((websiteStatus) => {
         if (websiteStatus) {
           changeDiscordRank(
@@ -196,20 +304,35 @@ function changeWebsiteRank(requestID, editID, newRank) {
   });
 }
 
-function changeDiscordRank(guild, editUser, newRank) {
+function changeDiscordRank(editUser, newRank) {
   return new Promise((resolve, reject) => {
-    console.log(guild.name);
-    guild.fetchMember(editUser).then((guildMember) => {
-      guildMember.removeRoles([
-        guild.roles.find(role => role.id == RankID.Newbie),
-        guild.roles.find(role => role.id == RankID.Regular),
-        guild.roles.find(role => role.id == RankID.Veteran),
-        guild.roles.find(role => role.id == RankID.Moderator),
-        guild.roles.find(role => role.id == RankID.Developer),
-        guild.roles.find(role => role.id == RankID.Admin)
-      ]).then((guildMember) => {
-        guildMember.addRole(guild.roles.find(role => role.id == newRank));
+
+    //Get Flow Gaming Member
+    bot.guilds.get('352601559458250762').fetchMember(editUser).then((guildMember) => {
+      removeAllRoles(editUser).then((guildMember) => {
+        guildMember.addRole(bot.guilds.get('352601559458250762').roles.get(Convert.Rank.toId(newRank)));
         resolve (true);
+      });
+    });
+  });
+}
+
+function removeAllRoles(editID) {
+  return new Promise((resolve, reject) => {
+    var guild = bot.guilds.get('352601559458250762');
+
+    guild.fetchMember(editID).then((guildMember) => {
+      guildMember.removeRoles([
+        guild.roles.get(RankID.Newbie),
+        guild.roles.get(RankID.Regular),
+        guild.roles.get(RankID.Veteran),
+        guild.roles.get(RankID.Moderator),
+        guild.roles.get(RankID.Developer),
+        guild.roles.get(RankID.Admin),
+        guild.roles.get(RankID.Owner)
+      ]).then((guildMember) => {
+        console.log('Removed all roles from ' + editID);
+        resolve(guildMember);
       });
     });
   });
@@ -220,32 +343,4 @@ function sanitizeString(unsanitaryString) {
     return '';
 
   return unsanitaryString.replace(/[^\w\s_.:!@#-]/, "");
-}
-
-function convertRankIDtoNum(rankID) {
-  switch (rankID) {
-    case RankID.Newbie:
-      return 1;
-    case RankID.Regular:
-      return 2;
-    case RankID.Veteran:
-      return 3;
-    case RankID.Moderator:
-      return 4;
-    case RankID.Developer:
-      return 5;
-    case RankID.Admin:
-      return 6;
-    default:
-      return 0;
-  }
-}
-
-const RankID = {
-  Newbie: '618284984305975306',
-  Regular: '352602895776088064',
-  Veteran: '352602848128663553',
-  Moderator: '352602806336749590',
-  Developer: '615062673775919116',
-  Admin: '352602773537161219'
 }
