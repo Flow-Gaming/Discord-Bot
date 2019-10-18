@@ -150,11 +150,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     case 'rank':
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-          fgGuild.channels.get('615062943121408000').send(
-            'User edit from server:\n' +
-            fgGuild.members.get(requestData.discordId).displayName +
-            ' from http://localhost:4650/users/'+requestData.discordId+'/'+requestData.field+'/'+requestData.data
-          );
+          fgGuild.channels.get('615062943121408000').send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)));
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
@@ -162,7 +158,22 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
         return;
       }
       break;
-  }
+    case 'name':
+      if (requestData.cookie == passwords.serverIdToken) {
+        changeDiscordName(requestData.discordId, sanitizeString(requestData.data)).then(() => {
+          fgGuild.channels.get('615062943121408000').send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
+        });
+      } else {
+        console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
+        res.send(ErrorStrings.UNAUTHORIZED);
+        return;
+      }
+      break;
+    default:
+      console.log('Error: ' + ErrorStrings.INVALID_FIELD + ' from ' + requestData.cookie);
+      res.send(ErrorStrings.INVALID_FIELD);
+      return;
+}
 
   res.send('Hello');
 });
@@ -313,6 +324,16 @@ function changeDiscordRank(editUser, newRank) {
         guildMember.addRole(bot.guilds.get('352601559458250762').roles.get(Convert.Rank.toId(newRank)));
         resolve (true);
       });
+    });
+  });
+}
+
+function changeDiscordName(editUser, newName) {
+  return new Promise((resolve, reject) => {
+
+    //Get Flow Gaming Member
+    bot.guilds.get('352601559458250762').fetchMember(editUser).then((guildMember) => {
+        guildMember.setNickname(sanitizeString(newName)).then(resolve (true)).catch(console.error);
     });
   });
 }
