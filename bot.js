@@ -324,7 +324,9 @@ function changeDiscordRank(editUser, newRank) {
     //Get Flow Gaming Member
     bot.guilds.get('352601559458250762').fetchMember(editUser).then((guildMember) => {
       removeAllRoles(editUser).then((guildMember) => {
-        guildMember.addRole(bot.guilds.get('352601559458250762').roles.get(Convert.Rank.toId(newRank)));
+        if (Convert.Rank.toNum(newRank) != 0) {
+          guildMember.addRole(bot.guilds.get('352601559458250762').roles.get(Convert.Rank.toId(newRank)));
+        }
         resolve (true);
       });
     });
