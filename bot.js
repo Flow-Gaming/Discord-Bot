@@ -153,7 +153,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     case 'rank':
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)));
+          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
