@@ -9,6 +9,9 @@ var request = require('request').defaults({jar: true});
 var serverCookie = request.jar();
 const prefix = 'f.';
 const apiUrl = 'https://api2.flowgaming.org/graphql';
+const breakroom = {
+  id: '633511635763593236'
+}
 
 
 const RankID = {
@@ -150,7 +153,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     case 'rank':
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-          fgGuild.channels.get('615062943121408000').send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)));
+          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)));
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
@@ -161,7 +164,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     case 'name':
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordName(requestData.discordId, sanitizeString(requestData.data)).then(() => {
-          fgGuild.channels.get('615062943121408000').send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
+          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
