@@ -161,7 +161,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
   //Data field to edit
   switch (requestData.field) {
     case 'rank':
-      if (Convert.Rank.toNum(requestData.data) > 0 && Convert.Rank.toNum(requestData.data) < 7) {
+      if (Convert.Rank.toNum(requestData.data) >= 0 && Convert.Rank.toNum(requestData.data) < 7) {
         if (requestData.cookie == passwords.serverIdToken) {
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
             fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
