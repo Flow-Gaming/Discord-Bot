@@ -113,7 +113,46 @@ const Convert = {
         default:
           return 0;
       }
-    }
+    },
+
+    toString: function (num) {
+      switch (String(num)) {
+        case '0':
+          return 'Guest';
+        case '1':
+          return 'Newbie';
+        case '2':
+          return 'Regular';
+        case '3':
+          return 'Veteran';
+        case '4':
+          return 'Moderator';
+        case '5':
+          return 'Developer';
+        case '6':
+          return 'Admin';
+        case '7':
+          return 'CEO';
+        case RankID.Guest:
+          return 'Guest';
+        case RankID.Newbie:
+          return 'Newbie';
+        case RankID.Regular:
+          return 'Regular';
+        case RankID.Veteran:
+          return 'Veteran';
+        case RankID.Moderator:
+          return 'Moderator';
+        case RankID.Developer:
+          return 'Developer';
+        case RankID.Admin:
+          return 'Admin';
+        case RankID.Owner:
+          return 'CEO';
+        default:
+          return 0;
+      }
+    },
   }
 }
 
@@ -163,11 +202,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
       if (Convert.Rank.toNum(requestData.data) >= 0 && Convert.Rank.toNum(requestData.data) < 7) {
         if (requestData.cookie == passwords.serverIdToken) {
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-            if (Convert.Rank.toNum(requestData.data) != 0) {
-              fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
-            } else {
-              fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to Guest');
-            }
+            fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
           });
         } else {
           console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
