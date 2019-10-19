@@ -38,7 +38,6 @@ const ErrorStrings = {
 const Convert = {
   Rank: {
     toId: function (num) {
-      console.log('num ' + typeof num + ' ' + num);
       switch (String(num)) {
         case '0':
           return RankID.Guest;
