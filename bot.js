@@ -167,6 +167,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
               fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
             } else {
               fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to Guest');
+            }
           });
         } else {
           console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
