@@ -15,6 +15,7 @@ const breakroom = {
 
 
 const RankID = {
+  Guest: '352601559458250762',
   Newbie: '618284984305975306',
   Regular: '352602895776088064',
   Veteran: '352602848128663553',
@@ -27,6 +28,7 @@ const RankID = {
 const ErrorStrings = {
   INVALID_FIELD: "INVALID_FIELD",
   INVALID_ID: "INVALID_ID",
+  INVALID_RANK: "INVALID_RANK",
   INVALID_SEARCH: "INVALID_SEARCH",
   INVALID_USER: "INVALID_USER",
   UNAUTHORIZED: "UNAUTHORIZED",
@@ -38,6 +40,8 @@ const Convert = {
     toId: function (num) {
       console.log('num ' + typeof num + ' ' + num);
       switch (String(num)) {
+        case '0':
+          return RankID.Guest;
         case '1':
           return RankID.Newbie;
         case '2':
@@ -52,6 +56,8 @@ const Convert = {
           return RankID.Admin;
         case '7':
           return RankID.Owner;
+        case RankID.Guest:
+          return RankID.Guest;
         case RankID.Newbie:
           return RankID.Newbie;
         case RankID.Regular:
@@ -73,6 +79,8 @@ const Convert = {
 
     toNum: function (rank) {
       switch (String(rank)) {
+        case '0':
+          return 0;
         case '1':
           return 1;
         case '2':
@@ -87,6 +95,8 @@ const Convert = {
           return 6;
         case '7':
           return 7;
+        case RankID.Guest:
+          return 0;
         case RankID.Newbie:
           return 1;
         case RankID.Regular:
@@ -121,7 +131,7 @@ var server = app.listen(4650, function () {
     bot.guilds.forEach((guild) => {
       if (guild.name == "Flow Gaming") {
         serverCookie.setCookie('id=' + passwords.serverIdToken, apiUrl);
-        guild.channels.find(channel => channel.id === '615062943121408000').send('Flow Bot Online');
+        guild.channels.get('615062943121408000').send('Flow Bot Online');
         console.log('Flow Bot Online');
       }
     });
@@ -151,13 +161,19 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
   //Data field to edit
   switch (requestData.field) {
     case 'rank':
-      if (requestData.cookie == passwords.serverIdToken) {
-        changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
-        });
+      if (Convert.Rank.toNum(requestData.data) > 0 && Convert.Rank.toNum(requestData.data) < 7) {
+        if (requestData.cookie == passwords.serverIdToken) {
+          changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
+            fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + fgGuild.roles.get(Convert.Rank.toId(requestData.data)).name);
+          });
+        } else {
+          console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
+          res.send(ErrorStrings.UNAUTHORIZED);
+          return;
+        }
       } else {
-        console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
-        res.send(ErrorStrings.UNAUTHORIZED);
+        console.log('Error: ' + ErrorStrings.INVALID_RANK + ' from ' + requestData.cookie);
+        res.send(ErrorStrings.INVALID_RANK);
         return;
       }
       break;
