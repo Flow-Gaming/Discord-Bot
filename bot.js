@@ -2,6 +2,7 @@ var Discord = require('discord.js');
 var bot = new Discord.Client();
 var express = require('express');
 var app = express();
+var schedule = require('node-schedule');
 var cookieParser = require('cookie-parser');
 var passwords = require('./passwords.json');
 var packageInfo = require('./package.json');
@@ -9,8 +10,18 @@ var request = require('request').defaults({jar: true});
 var serverCookie = request.jar();
 const prefix = 'f.';
 const apiUrl = 'https://api2.flowgaming.org/graphql';
-const breakroom = {
-  id: '633511635763593236'
+
+const flow_gaming = {
+  id: '352601559458250762',
+  announcements: {
+    id: '445091752601321472'
+  },
+  breakroom: {
+    id: '633511635763593236'
+  },
+  developers: {
+    id: '615062943121408000'
+  }
 }
 
 
@@ -167,9 +178,9 @@ var server = app.listen(4650, function () {
     bot.user.setActivity(prefix + 'help');
 
     bot.guilds.forEach((guild) => {
-      if (guild.name == "Flow Gaming") {
+      if (guild.name == "Flow Gaming" || guild.id == '352601559458250762') {
         serverCookie.setCookie('id=' + passwords.serverIdToken, apiUrl);
-        guild.channels.get('615062943121408000').send('Flow Bot Online');
+        guild.channels.get(flow_gaming.developers.id).send('Flow Bot Online');
         console.log('Flow Bot Online');
       }
     });
@@ -202,7 +213,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
       if (Convert.Rank.toNum(requestData.data) >= 0 && Convert.Rank.toNum(requestData.data) < 7) {
         if (requestData.cookie == passwords.serverIdToken) {
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-            fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
+            fgGuild.channels.get(flow_gaming.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
           });
         } else {
           console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
@@ -218,7 +229,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     case 'name':
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordName(requestData.discordId, sanitizeString(requestData.data)).then(() => {
-          fgGuild.channels.get(breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
+          fgGuild.channels.get(flow_gaming.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
@@ -305,6 +316,35 @@ bot.on('message', message => {
     }
 });
 
+//Sec(opt) Min Hour Day Month Weekday
+
+//Change icon for Halloween
+schedule.scheduleJob('0 7 24 10 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-HLWN.png');
+  bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Thanks Thanksgiving!');
+});
+schedule.scheduleJob('0 7 3 11 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
+  bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Merry Christmas!');
+});
+
+//Change icon for Thanksgiving
+schedule.scheduleJob('0 7 21 11 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-THXGVNG.png');
+  bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Thanks Thanksgiving!');
+});
+schedule.scheduleJob('0 7 1 12 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
+  bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Merry Christmas!');
+});
+
+//Change icon for Christmas
+schedule.scheduleJob('0 7 11 12 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-XMAS.png');
+});
+schedule.scheduleJob('0 7 1 1 *', function() {
+  bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
+});
 
 //=========================== Functions =============================
 
@@ -376,10 +416,10 @@ function changeDiscordRank(editUser, newRank) {
   return new Promise((resolve, reject) => {
 
     //Get Flow Gaming Member
-    bot.guilds.get('352601559458250762').fetchMember(editUser).then((guildMember) => {
+    bot.guilds.get(flow_gaming.id).fetchMember(editUser).then((guildMember) => {
       removeAllRoles(editUser).then((guildMember) => {
         if (Convert.Rank.toNum(newRank) != 0) {
-          guildMember.addRole(bot.guilds.get('352601559458250762').roles.get(Convert.Rank.toId(newRank)));
+          guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
         }
         resolve (true);
       });
@@ -391,7 +431,7 @@ function changeDiscordName(editUser, newName) {
   return new Promise((resolve, reject) => {
 
     //Get Flow Gaming Member
-    bot.guilds.get('352601559458250762').fetchMember(editUser).then((guildMember) => {
+    bot.guilds.get(flow_gaming.id).fetchMember(editUser).then((guildMember) => {
         guildMember.setNickname(sanitizeString(newName)).then(resolve (true)).catch(console.error);
     });
   });
