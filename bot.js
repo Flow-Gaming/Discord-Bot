@@ -2,7 +2,7 @@ var Discord = require('discord.js');
 var bot = new Discord.Client();
 var express = require('express');
 var app = express();
-var schedule = require('node-schedule');
+var cronJob = require('cron').CronJob;
 var cookieParser = require('cookie-parser');
 var passwords = require('./passwords.json');
 var packageInfo = require('./package.json');
@@ -319,31 +319,31 @@ bot.on('message', message => {
 //Sec(opt) Min Hour Day Month Weekday
 
 //Change icon for Halloween
-schedule.scheduleJob('0 7 24 10 *', function() {
+new cronJob('0 7 24 10 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-HLWN.png');
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Halloween!');
-});
-schedule.scheduleJob('0 7 3 11 *', function() {
+}, undefined, true, "America/New_York");
+new cronJob('0 7 3 11 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
-});
+}, undefined, true, "America/New_York");
 
 //Change icon for Thanksgiving
-schedule.scheduleJob('0 7 21 11 *', function() {
+new cronJob('0 7 21 11 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-THXGVNG.png');
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Thanksgiving!');
-});
-schedule.scheduleJob('0 7 1 12 *', function() {
+}, undefined, true, "America/New_York");
+new cronJob('0 7 1 12 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
-});
+}, undefined, true, "America/New_York");
 
 //Change icon for Christmas
-schedule.scheduleJob('0 7 11 12 *', function() {
+new cronJob('0 7 11 12 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-XMAS.png');
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Merry Christmas!');
-});
-schedule.scheduleJob('0 7 1 1 *', function() {
+}, undefined, true, "America/New_York");
+new cronJob('0 7 1 1 *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
-});
+}, undefined, true, "America/New_York");
 
 //=========================== Functions =============================
 
