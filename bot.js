@@ -319,33 +319,33 @@ bot.on('message', message => {
 //Sec(opt) Min Hour Day Month Weekday
 
 //Change icon for Halloween
-new cronJob('0 7 24 October *', function() {
+new cronJob('0 7 24 oct *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-HLWN.png');
 }, undefined, true, "America/New_York");
-new cronJob('0 7 31 October *', function() {
+new cronJob('0 7 31 oct *', function() {
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Halloween!');
 }, undefined, true, "America/New_York");
-new cronJob('0 7 3 November *', function() {
+new cronJob('0 7 3 nov *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
 }, undefined, true, "America/New_York");
 
 //Change icon for Thanksgiving
-new cronJob('0 7 21 November *', function() {
+new cronJob('0 7 21 nov *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-THXGVNG.png');
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Happy Thanksgiving!');
 }, undefined, true, "America/New_York");
-new cronJob('0 7 1 December *', function() {
+new cronJob('0 7 1 dec *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
 }, undefined, true, "America/New_York");
 
 //Change icon for Christmas
-new cronJob('0 7 11 December *', function() {
+new cronJob('0 7 11 dec *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW-XMAS.png');
 }, undefined, true, "America/New_York");
-new cronJob('0 7 25 December *', function() {
+new cronJob('0 7 25 dec *', function() {
   bot.guilds.get(flow_gaming.id).channels.get(flow_gaming.announcements.id).send('Merry Christmas!');
 }, undefined, true, "America/New_York");
-new cronJob('0 7 1 January *', function() {
+new cronJob('0 7 1 jan *', function() {
   bot.guilds.get(flow_gaming.id).setIcon('images/FLOW.png');
 }, undefined, true, "America/New_York");
 
