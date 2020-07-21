@@ -1,5 +1,6 @@
 var Discord = require('discord.js');
 var bot = new Discord.Client();
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var cronJob = require('cron').CronJob;
@@ -10,6 +11,11 @@ var request = require('request').defaults({jar: true});
 var serverCookie = request.jar();
 const prefix = 'f.';
 const apiUrl = 'https://api2.flowgaming.org/graphql';
+var badText;
+fs.readFile('bad-text.txt', 'utf8', function(err, data) {
+  if (err) throw err;
+  badText = data;
+});
 
 const flow_gaming = {
   id: '352601559458250762',
@@ -241,7 +247,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
       console.log('Error: ' + ErrorStrings.INVALID_FIELD + ' from ' + requestData.cookie);
       res.send(ErrorStrings.INVALID_FIELD);
       return;
-}
+  }
 
   res.send('Hello');
 });
@@ -253,6 +259,28 @@ bot.on('message', message => {
 	if (message.content.startsWith(prefix + 'website')) {
 		console.log(message.author.username + ' : website : ' + message.createdAt);
 		message.channel.send('https://www.flowgaming.org');
+  } else if (message.content.startsWith(prefix + 'add-movie')) {
+    console.log(message.author.username + ' : add-movie : ' + message.createdAt);
+    if(message.member.roles.has('700075595974967468')) {
+      message.channel.send('You already have the Movie role.');
+    } else {
+      var role = message.guild.roles.find(role => role.name === "Movie");
+      var member = message.guild.member(message.author);
+      member.addRole(role).then(function () {
+        message.channel.send('Added the Movie role.');
+      }).catch(console.error);
+    }
+  } else if (message.content.startsWith(prefix + 'rem-movie')) {
+    console.log(message.author.username + ' : rem-movie : ' + message.createdAt);
+    if(message.member.roles.has('700075595974967468')) {
+      var role = message.guild.roles.find(role => role.name === "Movie");
+      var member = message.guild.member(message.author);
+      member.removeRole(role).then(function () {
+        message.channel.send('Removed the Movie role.');
+      }).catch(console.error);
+    } else {
+      message.channel.send('You don\'t have the Movie role.');
+    }
 	} else if (message.content.startsWith(prefix + 'invite')) {
 		console.log(message.author.username + ' : invite : ' + message.createdAt);
 		message.channel.send('https://discord.gg/NC3E6ZN');
@@ -261,6 +289,7 @@ bot.on('message', message => {
 		message.channel.send(
 			'```\n' +
 			'invite: Gives and invite to the server\n' +
+      'movie: Gives you the movie role\n' +
 		  'ping: pong\n' +
 			'website: Gives a link to the website\n' +
 			'```');
@@ -313,6 +342,9 @@ bot.on('message', message => {
           message.channel.send('Failed via website');
         }
       });
+    } else if (message.content.includes(badText)) {
+      msg.author.sendMessage('Stop being a bad boy');
+      msg.delete();
     }
 });
 
@@ -419,6 +451,7 @@ function changeDiscordRank(editUser, newRank) {
   return new Promise((resolve, reject) => {
 
     //Get Flow Gaming Member
+    console.log(editUser);
     bot.guilds.get(flow_gaming.id).fetchMember(editUser).then((guildMember) => {
       removeAllRoles(editUser).then((guildMember) => {
         if (Convert.Rank.toNum(newRank) != 0) {
