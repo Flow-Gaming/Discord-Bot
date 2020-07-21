@@ -145,6 +145,8 @@ bot.on('message', message => {
 			'invite: Gives and invite to the server\n' +
       'movie: Gives you the movie role\n' +
 		  'ping: pong\n' +
+      'role add: lets you add game roles to your account\n' +
+      'role remove: lets you remove game roles from your account\n' +
 			'website: Gives a link to the website\n' +
 			'```');
     } else if (message.content.startsWith(prefix + 'setrank')) {
