@@ -64,15 +64,16 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
         if (requestData.cookie == passwords.serverIdToken) {
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
             fgGuild.channels.get(flow_gaming.channels.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
+            res.send(JSON.stringify({status:true, error: null}));
           });
         } else {
           console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
-          res.send(ErrorStrings.UNAUTHORIZED);
+          res.send(JSON.stringify({status:false, error: ErrorStrings.UNAUTHORIZED}));
           return;
         }
       } else {
         console.log('Error: ' + ErrorStrings.INVALID_RANK + ' from ' + requestData.cookie);
-        res.send(ErrorStrings.INVALID_RANK);
+        res.send(JSON.stringify({status:false, error: ErrorStrings.INVALID_RANK}));
         return;
       }
       break;
@@ -80,20 +81,19 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
       if (requestData.cookie == passwords.serverIdToken) {
         changeDiscordName(requestData.discordId, sanitizeString(requestData.data)).then(() => {
           fgGuild.channels.get(flow_gaming.channels.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s name to ' + sanitizeString(requestData.data));
+          res.send(JSON.stringify({status:true, error: null}));
         });
       } else {
         console.log('Error: ' + ErrorStrings.UNAUTHORIZED + ' from ' + requestData.cookie);
-        res.send(ErrorStrings.UNAUTHORIZED);
+        res.send(JSON.stringify({status:false, error: ErrorStrings.UNAUTHORIZED}));
         return;
       }
       break;
     default:
       console.log('Error: ' + ErrorStrings.INVALID_FIELD + ' from ' + requestData.cookie);
-      res.send(ErrorStrings.INVALID_FIELD);
+      res.send(JSON.stringify({status:false, error: ErrorStrings.INVALID_FIELD}));
       return;
   }
-
-  res.send('Hello');
 });
 
 //All user interactions
@@ -507,37 +507,21 @@ const Convert = {
 
     toNum: function (rank) {
       switch (String(rank)) {
-        case '0':
+        case '0' || RankID.Guest:
           return 0;
-        case '1':
+        case '1' || RankID.Newbie:
           return 1;
-        case '2':
+        case '2' || RankID.Regular:
           return 2;
-        case '3':
+        case '3' || RankID.Veteran:
           return 3;
-        case '4':
+        case '4' || RankID.Moderator:
           return 4;
-        case '5':
+        case '5' || RankID.Developer:
           return 5;
-        case '6':
+        case '6' || RankID.Admin:
           return 6;
-        case '7':
-          return 7;
-        case RankID.Guest:
-          return 0;
-        case RankID.Newbie:
-          return 1;
-        case RankID.Regular:
-          return 2;
-        case RankID.Veteran:
-          return 3;
-        case RankID.Moderator:
-          return 4;
-        case RankID.Developer:
-          return 5;
-        case RankID.Admin:
-          return 6;
-        case RankID.Owner:
+        case '7' || RankID.Owner:
           return 7;
         default:
           return 0;
@@ -546,40 +530,24 @@ const Convert = {
 
     toString: function (num) {
       switch (String(num)) {
-        case '0':
+        case '0' || RankID.Guest:
           return 'Guest';
-        case '1':
+        case '1' || RankID.Newbie:
           return 'Newbie';
-        case '2':
+        case '2' || RankID.Regular:
           return 'Regular';
-        case '3':
+        case '3' || RankID.Veteran:
           return 'Veteran';
-        case '4':
+        case '4' || RankID.Moderator:
           return 'Moderator';
-        case '5':
+        case '5' || RankID.Developer:
           return 'Developer';
-        case '6':
+        case '6' || RankID.Admin:
           return 'Admin';
-        case '7':
-          return 'CEO';
-        case RankID.Guest:
-          return 'Guest';
-        case RankID.Newbie:
-          return 'Newbie';
-        case RankID.Regular:
-          return 'Regular';
-        case RankID.Veteran:
-          return 'Veteran';
-        case RankID.Moderator:
-          return 'Moderator';
-        case RankID.Developer:
-          return 'Developer';
-        case RankID.Admin:
-          return 'Admin';
-        case RankID.Owner:
+        case '7' || RankID.Owner:
           return 'CEO';
         default:
-          return 0;
+          return 'Guest';
       }
     },
   }
