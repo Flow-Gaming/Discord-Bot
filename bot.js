@@ -341,13 +341,16 @@ function changeDiscordRank(editUser, newRank) {
   return new Promise((resolve, reject) => {
 
     //Get Flow Gaming Member
-    console.log(editUser);
     bot.guilds.get(flow_gaming.id).fetchMember(editUser).then((guildMember) => {
       removeAllRoles(editUser).then((guildMember) => {
-        if (Convert.Rank.toNum(newRank) != 0) {
+        try {
           guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
+          resolve(true);
+        } catch (error) {
+          console.log('Error adding role:');
+          console.log(error);
+          resolve(false);
         }
-        resolve (true);
       });
     });
   });
