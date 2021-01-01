@@ -62,13 +62,9 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
   //Data field to edit
   switch (requestData.field) {
     case 'rank':
-      console.log('rank');
       if (Convert.Rank.toNum(requestData.data) >= 0 && Convert.Rank.toNum(requestData.data) < 7) {
-        console.log('valid rank');
         if (requestData.cookie == passwords.serverIdToken) {
-          console.log('admin priv');
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
-            console.log('change discord rank');
             fgGuild.channels.get(flow_gaming.channels.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
             res.send(JSON.stringify({status:true, error: null}));
           });
@@ -356,6 +352,8 @@ function changeDiscordRank(editUser, newRank) {
           } catch (error) {
             console.log('Error adding role');
           }
+        } else {
+          console.log('Invalid New Rank');
         }
         resolve(true);
       });
