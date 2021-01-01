@@ -350,7 +350,7 @@ function changeDiscordRank(editUser, newRank) {
         console.log(Convert.Rank.toNum(newRank));
         if (Convert.Rank.toNum(newRank) != 0) {
           try {
-            console.log(guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
+            guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
           } catch (error) {
             console.log('Error adding role');
           }
