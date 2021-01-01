@@ -96,6 +96,7 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
   res.send('Hello');
 });
 
+//All user interactions
 bot.on('message', message => {
 	if (message.author === bot.user)
 		return;
@@ -204,6 +205,12 @@ bot.on('message', message => {
     }
 });
 
+//On user join check if existing user and apply roles
+bot.on('guildMemberAdd', member => {
+
+    member.guild.channels.get('channelID').send("Welcome");
+});
+
 //Sec(opt) Min Hour Day Month Weekday
 
 //Change icon for Halloween
@@ -238,6 +245,33 @@ new cronJob('0 7 1 jan *', function() {
 }, undefined, true, "America/New_York");
 
 //=========================== Functions =============================
+
+function checkWebsiteRank(requestID) {
+  return new Promise((resolve, reject) => {
+    request.post({
+      url: apiUrl,
+      form: {
+        query: `
+        {
+          request: getUser(search:discordId, id:"`+requestID+`") {
+            username
+            uniqueid
+            rank
+          }
+        }`
+      },
+      jar: serverCookie
+    }, function(error, response, body) {
+      responseObject = JSON.parse(body);
+      if (responseObject.error) {
+        console.log(responseObject.error);
+        reject(false);
+      } else {
+        console.log('Get Rank on Join : ' + changeDiscordRank(requestID, responseObject.data.request.rank));
+      }
+    });
+  });
+}
 
 function changeWebsiteRank(requestID, editID, newRank) {
   return new Promise((resolve, reject) => {
