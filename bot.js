@@ -54,15 +54,21 @@ app.get('/users/:discordId/:field/:data', (req, res) => {
     data: sanitizeString(req.params.data)
   }
 
+  console.log(requestData);
+
   //Flow Gaming
   var fgGuild = bot.guilds.get('352601559458250762');
 
   //Data field to edit
   switch (requestData.field) {
     case 'rank':
+      console.log('rank');
       if (Convert.Rank.toNum(requestData.data) >= 0 && Convert.Rank.toNum(requestData.data) < 7) {
+        console.log('valid rank');
         if (requestData.cookie == passwords.serverIdToken) {
+          console.log('admin priv');
           changeDiscordRank(requestData.discordId, Convert.Rank.toId(requestData.data)).then(() => {
+            console.log('change discord rank');
             fgGuild.channels.get(flow_gaming.channels.breakroom.id).send('Changed ' + fgGuild.members.get(requestData.discordId).displayName + '\'s rank to ' + Convert.Rank.toString(requestData.data));
             res.send(JSON.stringify({status:true, error: null}));
           });
@@ -345,9 +351,13 @@ function changeDiscordRank(editUser, newRank) {
     bot.guilds.get(flow_gaming.id).fetchMember(editUser).then((guildMember) => {
       removeAllRoles(editUser).then((guildMember) => {
         if (Convert.Rank.toNum(newRank) != 0) {
-          guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
+          try {
+            guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
+          } catch (error) {
+            console.log('Error adding role');
+          }
         }
-        resolve (true);
+        resolve(true);
       });
     });
   });
