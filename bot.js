@@ -348,16 +348,13 @@ function changeDiscordRank(editUser, newRank) {
       removeAllRoles(editUser).then((guildMember) => {
 
         console.log(Convert.Rank.toNum(newRank));
-        if (Convert.Rank.toNum(newRank) != 0) {
-          try {
-            guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
-          } catch (error) {
-            console.log('Error adding role');
-          }
-        } else {
-          console.log('Invalid New Rank');
+        try {
+          guildMember.addRole(bot.guilds.get(flow_gaming.id).roles.get(Convert.Rank.toId(newRank)));
+          resolve(true);
+        } catch (error) {
+          console.log('Error adding role');
+          resolve(false);
         }
-        resolve(true);
       });
     });
   });
@@ -517,6 +514,8 @@ const Convert = {
 
     toNum: function (rank) {
       console.log('toNum' + rank);
+      console.log(typeof rank);
+      console.log(typeof RankID.Veteran);
       switch (String(rank)) {
         case '0' || RankID.Guest:
           return 0;
