@@ -516,6 +516,7 @@ const Convert = {
     },
 
     toNum: function (rank) {
+      console.log('toNum' + rank);
       switch (String(rank)) {
         case '0' || RankID.Guest:
           return 0;
@@ -534,6 +535,7 @@ const Convert = {
         case '7' || RankID.Owner:
           return 7;
         default:
+          console.log('toNum:Invalid Rank');
           return 0;
       }
     },
